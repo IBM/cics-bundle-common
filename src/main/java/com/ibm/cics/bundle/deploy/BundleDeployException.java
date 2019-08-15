@@ -1,4 +1,4 @@
-package com.ibm.cics.deploy;
+package com.ibm.cics.bundle.deploy;
 
 /*-
  * #%L
