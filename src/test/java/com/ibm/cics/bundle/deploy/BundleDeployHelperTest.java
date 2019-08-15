@@ -1,4 +1,4 @@
-package com.ibm.cics.deploy;
+package com.ibm.cics.bundle.deploy;
 
 /*-
  * #%L
@@ -28,8 +28,8 @@ import org.junit.rules.ExpectedException;
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.ibm.cics.deploy.BundleDeployException;
-import com.ibm.cics.deploy.BundleDeployHelper;
+import com.ibm.cics.bundle.deploy.BundleDeployException;
+import com.ibm.cics.bundle.deploy.BundleDeployHelper;
 
 public class BundleDeployHelperTest {
 	
