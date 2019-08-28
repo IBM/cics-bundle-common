@@ -2,7 +2,7 @@ package com.ibm.cics.bundle.deploy;
 
 /*-
  * #%L
- * CICS Bundle Maven Plugin
+ * CICS Bundle Common Parent
  * %%
  * Copyright (C) 2019 IBM Corp.
  * %%

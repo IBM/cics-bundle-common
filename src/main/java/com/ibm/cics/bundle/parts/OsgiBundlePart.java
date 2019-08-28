@@ -1,18 +1,8 @@
 package com.ibm.cics.bundle.parts;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-
-import org.w3c.dom.Element;
-
 /*-
  * #%L
- * CICS Bundle Maven Plugin
+ * CICS Bundle Common Parent
  * %%
  * Copyright (C) 2019 IBM Corp.
  * %%
@@ -23,6 +13,16 @@ import org.w3c.dom.Element;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
+import org.w3c.dom.Element;
 
 public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	

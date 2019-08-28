@@ -1,10 +1,8 @@
 package com.ibm.cics.bundle.parts;
 
-import java.io.File;
-
 /*-
  * #%L
- * CICS Bundle Maven Plugin
+ * CICS Bundle Common Parent
  * %%
  * Copyright (C) 2019 IBM Corp.
  * %%
@@ -15,6 +13,8 @@ import java.io.File;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+
+import java.io.File;
 
 public class EarBundlePart extends AbstractJavaBundlePart {
 	

@@ -2,7 +2,7 @@ package com.ibm.cics.bundle.deploy;
 
 /*-
  * #%L
- * CICS Bundle Maven Plugin
+ * CICS Bundle Common Parent
  * %%
  * Copyright (C) 2019 IBM Corp.
  * %%
@@ -28,8 +28,6 @@ import org.junit.rules.ExpectedException;
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.ibm.cics.bundle.deploy.BundleDeployException;
-import com.ibm.cics.bundle.deploy.BundleDeployHelper;
 
 public class BundleDeployHelperTest {
 	

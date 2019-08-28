@@ -1,5 +1,5 @@
 # cics-bundle-common
-A collection of Maven plugins and utilities that are common between cics-bundle-maven and cics-bundle-gradle plugins.
+A collection of utilities that are common between cics-bundle-maven and cics-bundle-gradle plugins.
 
 
 ## Contributing

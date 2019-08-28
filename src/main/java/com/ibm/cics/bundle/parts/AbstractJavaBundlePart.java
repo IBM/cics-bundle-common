@@ -1,11 +1,8 @@
 package com.ibm.cics.bundle.parts;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 /*-
  * #%L
- * CICS Bundle Maven Plugin
+ * CICS Bundle Common Parent
  * %%
  * Copyright (C) 2019 IBM Corp.
  * %%
@@ -17,6 +14,8 @@ import java.io.ByteArrayOutputStream;
  * #L%
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 public abstract class AbstractJavaBundlePart extends BundlePartResource {
 
 	private final String jvmServer;
