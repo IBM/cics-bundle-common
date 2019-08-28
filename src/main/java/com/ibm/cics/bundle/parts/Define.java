@@ -14,14 +14,16 @@ package com.ibm.cics.bundle.parts;
  * #L%
  */
 
-public class Define {
+class Define {
 	
 	private final String name;
 	private final BundlePartType type;
+	private final String path;
 	
-	public Define(String name, BundlePartType type) {
+	public Define(String name, BundlePartType type, String path) {
 		this.name = name;
 		this.type = type;
+		this.path = path;
 	}
 	
 	public String getName() {
@@ -33,7 +35,7 @@ public class Define {
 	}
 	
 	public String getPath() {
-		return name + "." + type.getBundlePartExtension();
+		return path;
 	}
 	
 }

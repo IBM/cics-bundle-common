@@ -7,7 +7,6 @@ import static com.ibm.cics.bundle.parts.BundlePartType.EVENTBINDING;
 import static com.ibm.cics.bundle.parts.BundlePartType.FILE;
 import static com.ibm.cics.bundle.parts.BundlePartType.LIBRARY;
 import static com.ibm.cics.bundle.parts.BundlePartType.OSGIBUNDLE;
-import static com.ibm.cics.bundle.parts.BundlePartType.PIPELINE;
 import static com.ibm.cics.bundle.parts.BundlePartType.POLICY;
 import static com.ibm.cics.bundle.parts.BundlePartType.PROGRAM;
 import static com.ibm.cics.bundle.parts.BundlePartType.TRANSACTION;
@@ -47,7 +46,7 @@ public class BundlePartTypeComparator implements Comparator<BundlePartType> {
 				.addDependedOnBy(EPADAPTER, /* <- */ EPADAPTERSET)
 				.addDependsOn(EVENTBINDING, /* -> */ EPADAPTER, EPADAPTERSET)
 				.addDependsOn(PROGRAM, /* -> */ OSGIBUNDLE, LIBRARY)
-				.addDependsOn(URIMAP, /* -> */ PIPELINE, OSGIBUNDLE, EARBUNDLE, WARBUNDLE)
+				.addDependsOn(URIMAP, /* -> */ /* PIPELINE, not supported yet */ OSGIBUNDLE, EARBUNDLE, WARBUNDLE)
 				.addDependsOn(POLICY, /* -> */ EPADAPTER, EPADAPTERSET)
 				.addDependsOn(PROGRAM, /* -> */ FILE)
 				.build();

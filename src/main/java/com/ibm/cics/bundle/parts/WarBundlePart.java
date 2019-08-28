@@ -18,11 +18,11 @@ import java.io.File;
 
 public class WarBundlePart extends AbstractJavaBundlePart  {
 	
-	public WarBundlePart(String name, String jvmServer, File warFile) {
+	public WarBundlePart(String symbolicName, String jvmServer, File warFile) {
 		super(
-			name,
+			symbolicName,
 			BundlePartType.WARBUNDLE,
-			name,
+			symbolicName,
 			jvmServer,
 			warFile,
 			"war"

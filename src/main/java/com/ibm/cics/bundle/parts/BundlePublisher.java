@@ -1,16 +1,26 @@
 package com.ibm.cics.bundle.parts;
 
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,8 +34,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -53,18 +61,19 @@ public class BundlePublisher {
 		}
 	}
 	
-	private final File targetDir;
+	private final Path bundleRoot;
 	private final String bundleId;
 	private final int major;
 	private final int minor;
 	private final int micro;
 	private final int release;
 	
-	private Consumer<File> listener = f -> {};
-	private List<BundlePart> bundleParts = new ArrayList<>();
+	private Consumer<Path> listener = f -> {};
+	private Map<Path, BundleResource> bundleResources = new HashMap<>();
+	private List<Define> defines = new ArrayList<>();
 
-	public BundlePublisher(File targetDir, String bundleId, int major, int minor, int micro, int release) {
-		this.targetDir = targetDir;
+	public BundlePublisher(Path bundleRoot, String bundleId, int major, int minor, int micro, int release) {
+		this.bundleRoot = bundleRoot;
 		this.bundleId = bundleId;
 		this.major = major;
 		this.minor = minor;
@@ -72,20 +81,73 @@ public class BundlePublisher {
 		this.release = release;
 	}
 	
-	public void addBundlePart(BundlePart bundlePart) {
-		bundleParts.add(bundlePart);
+	public void addStaticResource(Path path, BundleResourceContentSupplier content) throws PublishException {
+		addResource(new StaticBundleResource(path, content));
 	}
 	
-	public void setFileChangeListener(Consumer<File> listener) {
+	public void addResource(BundleResource resource) throws PublishException {
+		Path destinationPath = getPathInBundle(resource);
+		
+		Define define = getDefine(destinationPath);
+		if (define != null) {
+			defines.add(define);
+		}
+		
+		bundleResources.put(destinationPath, resource);
+	}
+	
+	/**
+	 * Attempts to derive a name, bundle part extension and bundle part type for the supplied file.
+	 *   
+	 * @param toImport relative path in the bundle to the target file
+	 * @return a Define statement to add to cics.xml if the file was a bundle part, or null if not
+	 */
+	private static Define getDefine(Path toImport) {
+		String fileName = toImport.getFileName().toString();
+		
+		int dot = fileName.lastIndexOf(".");
+		if (dot <= 0) {
+			log.debug("Couldn't determine bundle part type for file name: " + fileName);
+			return null;
+		}
+		
+		String extension = fileName.substring(dot + 1).toLowerCase();
+		BundlePartType type = BundlePartType.getType(extension);
+		if(type != null) {
+			String name = fileName.substring(0, dot);
+			if (name.length() > 0) {
+				return new Define(name, type, toImport.toString());
+			} else {
+				log.debug("Couldn't determine bundle part name for file \"" + fileName + "\"");
+				return null;
+			}
+		} else {
+			log.debug("Couldn't determine bundle part type by extension for file \"" + fileName + "\"");
+			return null;
+		}
+	}
+
+	private Path getPathInBundle(BundleResource resource) throws PublishException {
+		Path pathInBundle = resource.getPath().normalize();
+		if (pathInBundle.isAbsolute()) {
+			throw new PublishException("Path " + pathInBundle.toString() + " was not relative");
+		}
+		
+		if (!bundleRoot.resolve(pathInBundle).startsWith(bundleRoot)) {
+			throw new PublishException("Path " + pathInBundle + " resolved to outside of bundle root");
+		}
+		
+		if (bundleResources.containsKey(pathInBundle)) {
+			throw new PublishException("A resource already exists at path " + pathInBundle);
+		}
+		return pathInBundle;
+	}
+	
+	public void setFileChangeListener(Consumer<Path> listener) {
 		this.listener = listener;
 	}
 	
-	public void publishMetadata() throws PublishException {
-		List<Define> defines = new ArrayList<>(bundleParts.size());
-		for (int i = 0 ;i < bundleParts.size(); i++) {
-			defines.add(writeDefine(bundleParts.get(i)));
-		}
-
+	public void publishResources() throws PublishException {
 		//Sort defines so dependencies always get installed first
 		defines.sort(DEFINE_COMPARATOR);
 
@@ -97,6 +159,40 @@ public class BundlePublisher {
 			micro,
 			release
 		);
+		
+		for (Map.Entry<Path, BundleResource> bundleResourceE : bundleResources.entrySet()) {
+			writeBundleResource(
+				bundleResourceE.getKey(),
+				bundleResourceE.getValue()
+			);
+		}
+	}
+
+	private void writeBundleResource(Path pathInBundle, BundleResource bundleResource) throws PublishException {
+		Path absolutePath = bundleRoot.resolve(pathInBundle);
+		
+		try {
+			Files.createDirectories(absolutePath.getParent());
+		} catch (IOException e1) {
+			throw new PublishException("Error creating directories for bundle resource \"" + pathInBundle + "\"");
+		}
+		
+		try (InputStream is = new BufferedInputStream(bundleResource.getContent())) {
+			Files.copy(is, absolutePath);
+			log.debug("Wrote resource to " + pathInBundle);
+			listener.accept(absolutePath);
+		} catch (IOException e) {
+			throw new PublishException("Error writing bundle resource \"" + pathInBundle + "\"", e);
+		}
+	}
+	
+	public void publishDynamicResources() throws PublishException {
+		for (BundleResource bundleResource : bundleResources.values()) {
+			for (BundleResource dynamicResource : bundleResource.getDynamicResources()) {
+				Path pathInBundle = getPathInBundle(dynamicResource);
+				writeBundleResource(pathInBundle, dynamicResource);
+			}
+		}
 	}
 	
 	private void writeManifest(List<Define> defines, String id, int major, int minor, int micro, int release) throws PublishException {
@@ -130,11 +226,15 @@ public class BundlePublisher {
 			root.appendChild(defineElement);
 		}
 
-		File metaInf = new File(targetDir, "META-INF");
-		metaInf.mkdirs();
-		File manifest = new File(metaInf, "cics.xml");
+		Path metaInf = bundleRoot.resolve("META-INF");
+		try {
+			Files.createDirectories(metaInf);
+		} catch (IOException e) {
+			throw new PublishException("Couldn't create META-INF directory", e);
+		}
+		Path manifest = metaInf.resolve("cics.xml");
 		
-		try (OutputStream out = new FileOutputStream(manifest)) {
+		try (OutputStream out = Files.newOutputStream(manifest)) {
 			writeDocument(d, out);
 			listener.accept(manifest);
 		} catch (TransformerException | IOException e) {
@@ -142,33 +242,18 @@ public class BundlePublisher {
 		}
 	}
 	
-	private Define writeDefine(BundlePart bundlePart) throws PublishException {
-		Define define = new Define(bundlePart.getName(), bundlePart.getType());
-		
-		File defineFile = new File(targetDir, define.getPath());
-		try (FileOutputStream out = new FileOutputStream(defineFile)) {
-			bundlePart.writeDefine(out);
-			log.debug("Wrote bundlepart to " + defineFile.getAbsolutePath());
-			listener.accept(defineFile);			
-			return define;
+	public void createArchive(Path cicsBundleArchive) throws PublishException {
+		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cicsBundleArchive.toFile()))) {
+			Files.walkFileTree(bundleRoot, new SimpleFileVisitor<Path>() {
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					zos.putNextEntry(new ZipEntry(bundleRoot.relativize(file).toString()));
+					Files.copy(file, zos);
+					zos.closeEntry();
+					return FileVisitResult.CONTINUE;
+				}
+			});
+			zos.close();
 		} catch (IOException e) {
-			throw new PublishException("Error writing bundle part \"" + define.getPath() + "\"", e);
-		}
-	}
-
-	public void publishContent() throws PublishException {
-		for (BundlePart bundlePart : bundleParts) {
-			bundlePart.publishContent(targetDir, listener);
-		}
-	}
-	
-	public void createArchive(File cicsBundleArchive) throws PublishException {
-		try {
-			ZipArchiver zipArchiver = new ZipArchiver();
-			zipArchiver.addDirectory(targetDir);
-			zipArchiver.setDestFile(cicsBundleArchive);
-			zipArchiver.createArchive();
-		} catch (ArchiverException | IOException e) {
 			throw new PublishException("Failed to create cics bundle archive", e);
 		}
 	}
@@ -189,6 +274,10 @@ public class BundlePublisher {
 		
 		PublishException(String message, Throwable cause) {
 			super(message, cause);
+		}
+		
+		PublishException(String message) {
+			super(message);
 		}
 		
 	}

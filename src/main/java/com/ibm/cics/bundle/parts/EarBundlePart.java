@@ -18,11 +18,11 @@ import java.io.File;
 
 public class EarBundlePart extends AbstractJavaBundlePart {
 	
-	public EarBundlePart(String name, String jvmServer, File earFile) {
+	public EarBundlePart(String symbolicName, String jvmServer, File earFile) {
 		super(
-			name,
+			symbolicName,
 			BundlePartType.EARBUNDLE,
-			name,
+			symbolicName,
 			jvmServer,
 			earFile,
 			"ear"

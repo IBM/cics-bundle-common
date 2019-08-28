@@ -1,5 +1,8 @@
 package com.ibm.cics.bundle.parts;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 /*-
  * #%L
  * CICS Bundle Maven Plugin
@@ -15,22 +18,19 @@ package com.ibm.cics.bundle.parts;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.function.Consumer;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.ibm.cics.bundle.parts.BundlePublisher.PublishException;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public abstract class AbstractJavaBundlePart extends BundlePart {
+public abstract class AbstractJavaBundlePart extends BundlePartResource {
 
 	private final String jvmServer;
 	private final File bin;
@@ -45,9 +45,6 @@ public abstract class AbstractJavaBundlePart extends BundlePart {
 			File bin,
 			String binExtension) {
 		super(name, type);
-		//TODO: make sure Maven plugin sets name to name-version
-		//TODO: make sure we validate this properly in Maven (just have to validate that it has a value)
-		//TODO: hook SLF4J logger statements up in Maven plugin (for instance): https://bitbucket.org/peachjean/slf4j-mojo/src/default/
 		if (jvmServer == null || "".equals(jvmServer)) throw new IllegalStateException("JVM server was not supplied");
 		this.jvmServer = jvmServer;
 		this.symbolicName = symbolicName;
@@ -56,19 +53,7 @@ public abstract class AbstractJavaBundlePart extends BundlePart {
 	}
 	
 	@Override
-	void publishContent(File workDir, Consumer<File> l) throws PublishException {
-		File targetFile = new File(workDir, getName() + "." + binExtension);
-		try {
-			FileUtils.copyFile(bin, targetFile);
-			log.debug("Copied content " + bin + " to " + targetFile);
-			l.accept(targetFile);
-		} catch (IOException e) {
-			throw new PublishException("Error copying "+ bin, e);
-		}
-	}
-	
-	@Override
-	void writeDefine(OutputStream out) throws PublishException, IOException {
+	public InputStream getContent() throws IOException {
 		Document bundlePart = BundlePublisher.createDocument();
 		
 		Element root = bundlePart.createElement(getType().getBundlePartExtension());
@@ -79,11 +64,19 @@ public abstract class AbstractJavaBundlePart extends BundlePart {
 		
 		addAdditionalNodes(root);
 		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
 		try {
-			BundlePublisher.writeDocument(bundlePart, out);
+			BundlePublisher.writeDocument(bundlePart, outputStream);
+			return new ByteArrayInputStream(outputStream.toByteArray());
 		} catch (TransformerException e) {
 			throw new IOException(e);
 		}
+	}
+	
+	@Override
+	public List<BundleResource> getDynamicResources() {
+		return Collections.singletonList(new StaticBundleResource(Paths.get(getName() + "." + binExtension), () -> new FileInputStream(bin)));
 	}
 	
 	protected void addAdditionalNodes(Element rootElement) {

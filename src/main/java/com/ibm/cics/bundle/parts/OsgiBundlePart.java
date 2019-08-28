@@ -77,7 +77,7 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	 * @return The manifest, or null if none was found
 	 */
 	private static Manifest getManifest(File osgiBundle) throws IOException {
-		if (osgiBundle.exists()) {
+		if (osgiBundle != null && osgiBundle.exists()) {
 			if (osgiBundle.isFile()) {
 				try (JarFile jarFile = new JarFile(osgiBundle)) {
 					return jarFile.getManifest();
