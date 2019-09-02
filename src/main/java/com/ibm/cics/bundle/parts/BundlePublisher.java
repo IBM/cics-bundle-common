@@ -15,6 +15,7 @@ package com.ibm.cics.bundle.parts;
  */
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -260,9 +261,13 @@ public class BundlePublisher {
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cicsBundleArchive.toFile()))) {
 			Files.walkFileTree(bundleRoot, new SimpleFileVisitor<Path>() {
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					zos.putNextEntry(new ZipEntry(bundleRoot.relativize(file).toString()));
+					String name = bundleRoot.relativize(file).toString();
+					name = name.replace(File.separatorChar, '/'); //Convert to unix file separators
+					
+					zos.putNextEntry(new ZipEntry(name));
 					Files.copy(file, zos);
 					zos.closeEntry();
+					
 					return FileVisitResult.CONTINUE;
 				}
 			});
