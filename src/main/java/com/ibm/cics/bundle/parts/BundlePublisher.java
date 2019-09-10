@@ -15,16 +15,11 @@ package com.ibm.cics.bundle.parts;
  */
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -254,26 +247,6 @@ public class BundlePublisher {
 			listener.accept(manifest);
 		} catch (TransformerException | IOException e) {
 			throw new PublishException("Error writing cics.xml", e);
-		}
-	}
-	
-	public void createArchive(Path cicsBundleArchive) throws PublishException {
-		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cicsBundleArchive.toFile()))) {
-			Files.walkFileTree(bundleRoot, new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					String name = bundleRoot.relativize(file).toString();
-					name = name.replace(File.separatorChar, '/'); //Convert to unix file separators
-					
-					zos.putNextEntry(new ZipEntry(name));
-					Files.copy(file, zos);
-					zos.closeEntry();
-					
-					return FileVisitResult.CONTINUE;
-				}
-			});
-			zos.close();
-		} catch (IOException e) {
-			throw new PublishException("Failed to create cics bundle archive", e);
 		}
 	}
 	
