@@ -21,8 +21,6 @@ import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -45,15 +43,12 @@ public class BundlePublisherTest {
 	public TemporaryFolder tf = new TemporaryFolder();
 	private Path bundleRoot;
 	private File ear;
-	private Path bundleArchive;
-	
 	
 	@Before
 	public void setUp() throws Exception {
 		bundleRoot = tf.newFolder().toPath();
 		ear = tf.newFile("my.ear");
 		FileUtils.write(ear, EAR_CONTENTS, StandardCharsets.UTF_8);
-		bundleArchive = tf.newFile("bundle.zip").toPath();
 	}
 
 	@Test
@@ -65,11 +60,6 @@ public class BundlePublisherTest {
 		bundlePublisher.publishDynamicResources();
 		//verify before zip
 		verifyContents(bundleRoot);
-		bundlePublisher.createArchive(bundleArchive);
-		
-		FileSystem bundleArchiveFs = FileSystems.newFileSystem(bundleArchive, null);
-		//verify after zip
-		verifyContents(bundleArchiveFs.getRootDirectories().iterator().next());
 	}
 
 	private void verifyContents(Path root) throws IOException {
