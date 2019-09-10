@@ -41,7 +41,7 @@ public class BundleDeployHelperTest {
 
 	@Test
 	public void testBundleDeployHelper_response200() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")
@@ -56,7 +56,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void testBundleDeployHelper_invalidFile() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")
@@ -74,7 +74,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void testBundleDeployHelper_invalidBundle() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(400)
 				.withHeader("Content-Type", "application/json")
@@ -92,7 +92,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void testBundleDeployHelper_unauthenticated401() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(401)
 				.withHeader("Content-Type", "text/plain")
@@ -110,7 +110,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void testBundleDeployHelper_unauthenticated401_noContentType() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(401)
 				.withBody("Http response: HTTP/1.1 401 Unauthorized")
@@ -127,7 +127,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void noPath() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")
@@ -151,7 +151,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void noPathSlash() throws Exception {
-		stubFor(post(urlEqualTo("/deploy"))
+		stubFor(post(urlEqualTo("/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")
@@ -176,7 +176,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void pathNoSlash() throws Exception {
-		stubFor(post(urlEqualTo("/foo/deploy"))
+		stubFor(post(urlEqualTo("/foo/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")
@@ -201,7 +201,7 @@ public class BundleDeployHelperTest {
 	
 	@Test
 	public void pathEndsWithSlash() throws Exception {
-		stubFor(post(urlEqualTo("/foo/deploy"))
+		stubFor(post(urlEqualTo("/foo/managedcicsbundles"))
 			.willReturn(aResponse()
 				.withStatus(200)
 				.withHeader("Content-Type", "text/plain")

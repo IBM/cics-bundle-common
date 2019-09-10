@@ -57,7 +57,7 @@ public class BundleDeployHelper {
 			path = path + "/";
 		}
 		
-		path = path + "deploy";
+		path = path + "managedcicsbundles";
 		
 		URI target;
 		try {
