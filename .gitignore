@@ -6,4 +6,4 @@ target/
 .settings
 .factorypath
 .idea
-cics-bundle-common.iml
+**/*.iml
