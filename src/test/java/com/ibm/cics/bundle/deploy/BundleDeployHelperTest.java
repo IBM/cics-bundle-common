@@ -78,14 +78,14 @@ public class BundleDeployHelperTest {
 			.willReturn(aResponse()
 				.withStatus(400)
 				.withHeader("Content-Type", "application/json")
-				.withBody("{\"stage\":\"Validate bundle definition\",\"message\": \"Stage: Validate bundle definition, Cause: Derived bundledir \\\"" + bundleFilePath + "\\\" didn't match the target BUNDDEF's bundle dir \\\"" + bundleFilePath + "\\\"\"}")
+				.withBody("{\"message\":\"Some of the supplied parameters were invalid\",\"requestErrors\":{\"bundle\":\"Derived bundledir \\\"" + bundleFilePath + "\\\" didn't match the target BUNDDEF's bundle dir \\\"" + bundleFilePath + "\\\"\"}}")
 			)
 		);
 
 		File bundleArchive = new File(bundleFilePath);
 		
 		expectedException.expect(BundleDeployException.class);
-		expectedException.expectMessage("Stage: Validate bundle definition, Cause: Derived bundledir \"" + bundleFilePath + "\" didn't match the target BUNDDEF's bundle dir \"" + bundleFilePath + "\"");
+		expectedException.expectMessage("Some of the supplied parameters were invalid:\n - bundle: Derived bundledir \"" + bundleFilePath + "\" didn't match the target BUNDDEF's bundle dir \"" + bundleFilePath + "\"\n");;
 		
 		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password");
 	}
