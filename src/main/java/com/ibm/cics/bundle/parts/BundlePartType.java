@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public enum BundlePartType {
 	
 	EARBUNDLE("earbundle"),
+	EBABUNDLE("ebabundle"),
 	EPADAPTER("epadapter"),
 	EPADAPTERSET("epadapterset"),
 	EVENTBINDING("evbind"),
