@@ -31,17 +31,18 @@ public class BundleDeployer {
 		String region = args[5];
 		String username = args[6];
 		String password = args[7];
+		boolean allowSelfSignedCertificate = Boolean.parseBoolean(args[8]);
 		
 		try {
 			URI uri = new URI(endpointURL);
-			BundleDeployHelper.deployBundle(uri, new File(bundle), bunddef, csdgroup, cicsplex, region, username, password);
+			BundleDeployHelper.deployBundle(uri, new File(bundle), bunddef, csdgroup, cicsplex, region, username, password, allowSelfSignedCertificate);
 			System.out.println("Bundle deployed");
 		} catch (URISyntaxException e) {
-			System.out.println("Invalid URL: " + endpointURL);
+			System.err.println("Invalid URL: " + endpointURL);
 		} catch (BundleDeployException e) {
-			System.out.println("Bundle deploy exception: " + e.getMessage());
+			System.err.println("Bundle deploy exception: " + e.getMessage());
 		} catch (IOException e) {
-			System.out.println("IO Exception: " + e.getMessage());
+			System.err.println("IO Exception: " + e.getMessage());
 		}
 		
 		
