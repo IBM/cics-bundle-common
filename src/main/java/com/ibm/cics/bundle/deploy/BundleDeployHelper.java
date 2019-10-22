@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -33,18 +36,21 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BundleDeployHelper {
-	
-	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, String password) throws BundleDeployException, IOException {
+
+	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, String password, boolean allowSelfSignedCertificate) throws BundleDeployException, IOException {
 		MultipartEntityBuilder mpeb = MultipartEntityBuilder.create();
 		mpeb.addPart("bundle", new FileBody(bundle, ContentType.create("application/zip")));
 		mpeb.addPart("bunddef", new StringBody(bunddef, ContentType.TEXT_PLAIN));
@@ -81,7 +87,22 @@ public class BundleDeployHelper {
 		HttpEntity httpEntity = mpeb.build();
 		httpPost.setEntity(httpEntity);
 		
-		HttpClient httpClient = HttpClientBuilder.create().build();
+		HttpClient httpClient;
+		if (!allowSelfSignedCertificate) {
+			httpClient = HttpClientBuilder.create().build();
+		} else {
+			try {
+				httpClient = HttpClients.custom()
+						.setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, (chain, type) -> true).build())
+						.setHostnameVerifier(new AllowAllHostnameVerifier())
+						.build();
+			} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+				throw new BundleDeployException("Error instantiating secure connection", e);
+			}
+		}
+		
+		
+		
 		String credentials = username + ":" + password;
 		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
 		httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
