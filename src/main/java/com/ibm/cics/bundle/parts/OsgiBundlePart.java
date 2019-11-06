@@ -59,7 +59,8 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 
 	/**
 	 * Gets the Bundle-Version header inside the given artifact's manifest.
-	 * @param a The Artifact to find the Bundle-Version of 
+	 * @param osgiBundle The OSGi bundle file to find the Bundle-Version of 
+	 * @throws IOException if an I/O error has occurred
 	 * @return The version or null if the manifest, or the header in the manifest, is not present
 	 */
 	public static String getBundleVersion(File osgiBundle) throws IOException {
@@ -72,7 +73,7 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	 * or will search inside a directory, if (as happens during incremental builds in the IDE), the artifact file
 	 * is still pointing into the classes directory.
 	 * 
-	 * @param a The file to read the manifest from
+	 * @param osgiBundle The OSGi bundle file to find the Bundle-Version of
 	 * @throws IOException if there was a problem reading the manifest
 	 * @return The manifest, or null if none was found
 	 */
