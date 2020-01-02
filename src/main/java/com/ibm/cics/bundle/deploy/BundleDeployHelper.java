@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,6 +47,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BundleDeployHelper {
+
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, String password, boolean allowSelfSignedCertificate) throws BundleDeployException, IOException {
 		MultipartEntityBuilder mpeb = MultipartEntityBuilder.create();
@@ -105,7 +105,7 @@ public class BundleDeployHelper {
 		
 		String credentials = username + ":" + password;
 		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
-		httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+		httpPost.setHeader(AUTHORIZATION_HEADER, "Basic " + encoding);
 		
 		if (!bundle.exists()) {
 			throw new BundleDeployException("Bundle does not exist: '" + bundle + "'");
