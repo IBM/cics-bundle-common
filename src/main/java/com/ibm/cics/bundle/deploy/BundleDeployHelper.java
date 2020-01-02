@@ -28,27 +28,28 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BundleDeployHelper {
+
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, String password, boolean allowSelfSignedCertificate) throws BundleDeployException, IOException {
 		MultipartEntityBuilder mpeb = MultipartEntityBuilder.create();
@@ -93,8 +94,8 @@ public class BundleDeployHelper {
 		} else {
 			try {
 				httpClient = HttpClients.custom()
-						.setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, (chain, type) -> true).build())
-						.setHostnameVerifier(new AllowAllHostnameVerifier())
+						.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+						.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
 						.build();
 			} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 				throw new BundleDeployException("Error instantiating secure connection", e);
@@ -105,7 +106,7 @@ public class BundleDeployHelper {
 		
 		String credentials = username + ":" + password;
 		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
-		httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+		httpPost.setHeader(AUTHORIZATION_HEADER, "Basic " + encoding);
 		
 		if (!bundle.exists()) {
 			throw new BundleDeployException("Bundle does not exist: '" + bundle + "'");
