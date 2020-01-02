@@ -34,14 +34,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,8 +94,8 @@ public class BundleDeployHelper {
 		} else {
 			try {
 				httpClient = HttpClients.custom()
-						.setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, (chain, type) -> true).build())
-						.setHostnameVerifier(new AllowAllHostnameVerifier())
+						.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+						.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
 						.build();
 			} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 				throw new BundleDeployException("Error instantiating secure connection", e);
