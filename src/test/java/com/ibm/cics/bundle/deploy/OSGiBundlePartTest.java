@@ -23,7 +23,7 @@ public class OSGiBundlePartTest extends AbstractJavaBundlePartTestCase {
 
 	@Override
 	protected AbstractJavaBundlePart createAbstractJavaBundlePart(File bin) {
-		return new OsgiBundlePart("foo", "1.2.3.456789", "bar", bin);
+		return new OsgiBundlePart("blah", "foo", "1.2.3.456789", "bar", bin);
 	}
 
 	@Override

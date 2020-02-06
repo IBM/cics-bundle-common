@@ -28,9 +28,9 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;
 
-	public OsgiBundlePart(String symbolicName, String osgiVersion, String jvmServer, File osgiBundle) {
+	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle) {
 		super(
-			symbolicName + "_" + osgiVersion,
+			name,
 			BundlePartType.OSGIBUNDLE,
 			symbolicName,
 			jvmServer,
@@ -55,6 +55,17 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	 */
 	public static String convertMavenVersionToOSGiVersion(String mavenVersion) {
 		return mavenVersion.replaceFirst("-", ".");
+	}
+
+	/**
+	 * Gets the Bundle-SymbolicName header inside the given artifact's manifest.
+	 * @param osgiBundle The OSGi bundle file to find the Bundle-SymbolicName of
+	 * @throws IOException if an I/O error has occurred
+	 * @return The symbolic name or null if the manifest, or the header in the manifest, is not present
+	 */
+	public static String getBundleSymbolicName(File osgiBundle) throws IOException {
+		Manifest manifest = getManifest(osgiBundle);
+		return manifest != null ? getManifestHeader(manifest, "Bundle-SymbolicName") : null;
 	}
 
 	/**
