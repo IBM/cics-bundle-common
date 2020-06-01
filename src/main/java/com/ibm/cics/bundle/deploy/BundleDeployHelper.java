@@ -90,10 +90,11 @@ public class BundleDeployHelper {
 		
 		HttpClient httpClient;
 		if (!allowSelfSignedCertificate) {
-			httpClient = HttpClientBuilder.create().build();
+			httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		} else {
 			try {
 				httpClient = HttpClients.custom()
+						.useSystemProperties()
 						.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
 						.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
 						.build();
