@@ -126,31 +126,35 @@ public class BundleDeployHelper {
 		
 		if (responseStatus.getStatusCode() != 200) {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			String responseContent = bufferedReader.lines().collect(Collectors.joining());
-			if (contentType == null) {
-				throw new BundleDeployException("Http response: " + responseStatus);
-			} else if (contentType.equals("application/xml")) {
-				//liberty level error
-				throw new BundleDeployException(responseContent);
-			} else if (contentType.equals("application/json")) {
-				//error from deploy endpoint
-				ObjectMapper objectMapper = new ObjectMapper();
-				String responseMessage = objectMapper.readTree(responseContent).get("message").asText();
-				String responseErrors = "";
-				
-				if (responseMessage.contains("Some of the supplied parameters were invalid")) {
-					Iterator<Entry<String, JsonNode>> errorFields = objectMapper.readTree(responseContent).get("requestErrors").fields();
-					while (errorFields.hasNext()) {
-						Entry<String, JsonNode> errorField = errorFields.next();
-						responseErrors += errorField.getKey() + ": " + errorField.getValue().asText() + "\n";
+			try {
+				String responseContent = bufferedReader.lines().collect(Collectors.joining());
+				if (contentType == null) {
+					throw new BundleDeployException("Http response: " + responseStatus);
+				} else if (contentType.equals("application/xml")) {
+					//liberty level error
+					throw new BundleDeployException(responseContent);
+				} else if (contentType.equals("application/json")) {
+					//error from deploy endpoint
+					ObjectMapper objectMapper = new ObjectMapper();
+					String responseMessage = objectMapper.readTree(responseContent).get("message").asText();
+					String responseErrors = "";
+					
+					if (responseMessage.contains("Some of the supplied parameters were invalid")) {
+						Iterator<Entry<String, JsonNode>> errorFields = objectMapper.readTree(responseContent).get("requestErrors").fields();
+						while (errorFields.hasNext()) {
+							Entry<String, JsonNode> errorField = errorFields.next();
+							responseErrors += errorField.getKey() + ": " + errorField.getValue().asText() + "\n";
+						}
+					} else if (responseMessage.contains("Bundle deployment failure")) {
+						responseErrors = objectMapper.readTree(responseContent).get("deployments").findValue("message").asText();
 					}
-				} else if (responseMessage.contains("Bundle deployment failure")) {
-					responseErrors = objectMapper.readTree(responseContent).get("deployments").findValue("message").asText();
+					throw new BundleDeployException(responseMessage + ":\n - " + responseErrors);
+				} else {
+					//CICS level error
+					throw new BundleDeployException(responseContent);
 				}
-				throw new BundleDeployException(responseMessage + ":\n - " + responseErrors);
-			} else {
-				//CICS level error
-				throw new BundleDeployException(responseContent);
+			} finally {
+				bufferedReader.close();
 			}
 		}
 	}
