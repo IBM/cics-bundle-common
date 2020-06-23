@@ -51,7 +51,7 @@ public class BundleDeployHelper {
 
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 
-	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, String password, boolean allowSelfSignedCertificate) throws BundleDeployException, IOException {
+	public static void deployBundle(URI endpointURL, File bundle, String bunddef, String csdgroup, String cicsplex, String region, String username, char[] password, boolean allowSelfSignedCertificate) throws BundleDeployException, IOException {
 		MultipartEntityBuilder mpeb = MultipartEntityBuilder.create();
 		mpeb.addPart("bundle", new FileBody(bundle, ContentType.create("application/zip")));
 		mpeb.addPart("bunddef", new StringBody(bunddef, ContentType.TEXT_PLAIN));
@@ -103,9 +103,8 @@ public class BundleDeployHelper {
 			}
 		}
 		
-		
-		
-		String credentials = username + ":" + password;
+		String stringPassword = (password == null || password.length == 0) ? null : String.valueOf(password);
+		String credentials = username + ":" + stringPassword;
 		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
 		httpPost.setHeader(AUTHORIZATION_HEADER, "Basic " + encoding);
 		

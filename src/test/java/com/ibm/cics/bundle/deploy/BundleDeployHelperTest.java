@@ -55,7 +55,7 @@ public class BundleDeployHelperTest {
 
 		File bundleArchive = new File(bundleFilePath);
 
-		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", true);
+		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class BundleDeployHelperTest {
 		File bundleArchive = new File(bundleFilePath);
 
 		try {
-			BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", false);
+			BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), false);
 			fail("Expected SSLException because self signed certificates are not allowed");
 		} catch (SSLException e) {
 			// pass
@@ -93,7 +93,7 @@ public class BundleDeployHelperTest {
 		expectedException.expect(BundleDeployException.class);
 		expectedException.expectMessage("Bundle does not exist: 'invalid path'");
 		
-		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", true);
+		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
 	
 	@Test
@@ -111,7 +111,7 @@ public class BundleDeployHelperTest {
 		expectedException.expect(BundleDeployException.class);
 		expectedException.expectMessage("Some of the supplied parameters were invalid:\n - bundle: Derived bundledir \"" + bundleFilePath + "\" didn't match the target BUNDDEF's bundle dir \"" + bundleFilePath + "\"\n");;
 		
-		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", true);
+		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
 	
 	@Test
@@ -129,7 +129,7 @@ public class BundleDeployHelperTest {
 		expectedException.expect(BundleDeployException.class);
 		expectedException.expectMessage("Http response: HTTP/1.1 401 Unauthorized");
 
-		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", true);
+		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
 	
 	@Test
@@ -146,7 +146,7 @@ public class BundleDeployHelperTest {
 		expectedException.expect(BundleDeployException.class);
 		expectedException.expectMessage("Http response: HTTP/1.1 401 Unauthorized");
 
-		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password", true);
+		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
 	
 	@Test
@@ -169,7 +169,7 @@ public class BundleDeployHelperTest {
 			"cicsplex",
 			"region",
 			"username",
-			"password",
+			"password".toCharArray(),
 			true
 		);
 	}
@@ -195,7 +195,7 @@ public class BundleDeployHelperTest {
 			"cicsplex",
 			"region",
 			"username",
-			"password",
+			"password".toCharArray(),
 			true
 		);
 	}
@@ -221,7 +221,7 @@ public class BundleDeployHelperTest {
 			"cicsplex",
 			"region",
 			"username",
-			"password",
+			"password".toCharArray(),
 			true
 		);
 	}
@@ -247,7 +247,7 @@ public class BundleDeployHelperTest {
 			"cicsplex",
 			"region",
 			"username",
-			"password",
+			"password".toCharArray(),
 			true
 		);
 	}
