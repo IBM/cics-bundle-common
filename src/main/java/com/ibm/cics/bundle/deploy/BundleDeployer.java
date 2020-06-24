@@ -51,13 +51,12 @@ public class BundleDeployer {
 	 * Current best practice is to avoid putting strings containing passwords onto
 	 *  the heap or interning the strings containing them, hence using char[] where possible
 	 */
-	public static char[] getPasswordAsChars(String passwordString) {
-		char[] password = new char[0];
-		
-		if (passwordString != null && !passwordString.isEmpty()) {
-			return passwordString.toCharArray();
+	public static char[] getPasswordAsChars(String password) {
+		if (password != null && !password.isEmpty()) {
+			return password.toCharArray();
+		} else {
+			return new char[0];
 		}
-		return password;
 	}
 	
 }
