@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.ibm.websphere.crypto.PasswordUtil;
-
 public class BundleDeployer {
 	
 	public static void main(String[] args) {
@@ -53,25 +51,13 @@ public class BundleDeployer {
 	 * Current best practice is to avoid putting strings containing passwords onto
 	 *  the heap or interning the strings containing them, hence using char[] where possible
 	 */
-	public static char[] getPasswordAsChars(String encryptedPassword) {
+	public static char[] getPasswordAsChars(String passwordString) {
 		char[] password = new char[0];
 		
-		if (encryptedPassword != null && !encryptedPassword.isEmpty()) {
-			if (isEncrypted(encryptedPassword)) {
-				try {
-					password = PasswordUtil.passwordDecode(encryptedPassword).toCharArray();
-				} catch (Exception e) {
-					System.err.println("Failed to decode encrypted password: " + e.getMessage());
-				}
-			} else {
-				password = encryptedPassword.toCharArray();
-			}
+		if (passwordString != null && !passwordString.isEmpty()) {
+			return passwordString.toCharArray();
 		}
 		return password;
-	}
-	
-	public static boolean isEncrypted(String password) {
-		return '{' == password.charAt(0) && password.contains("}");
 	}
 	
 }
