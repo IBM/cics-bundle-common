@@ -30,7 +30,7 @@ public class BundleDeployer {
 		String cicsplex = args[4];
 		String region = args[5];
 		String username = args[6];
-		String password = args[7];
+		char[] password = getPasswordAsChars(args[7]);
 		boolean allowSelfSignedCertificate = Boolean.parseBoolean(args[8]);
 		
 		try {
@@ -45,7 +45,18 @@ public class BundleDeployer {
 			System.err.println("IO Exception: " + e.getMessage());
 		}
 		
-		
+	}
+	
+	/*
+	 * Current best practice is to avoid putting strings containing passwords onto
+	 *  the heap or interning the strings containing them, hence using char[] where possible
+	 */
+	public static char[] getPasswordAsChars(String password) {
+		if (password != null && !password.isEmpty()) {
+			return password.toCharArray();
+		} else {
+			return new char[0];
+		}
 	}
 	
 }
