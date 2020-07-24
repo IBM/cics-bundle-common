@@ -141,10 +141,15 @@ public class BundleDeployHelper {
 					
 					if (responseMessage.contains("Some of the supplied parameters were invalid")) {
 						Iterator<Entry<String, JsonNode>> errorFields = objectMapper.readTree(responseContent).get("requestErrors").fields();
+						StringBuffer sb = new StringBuffer();
 						while (errorFields.hasNext()) {
 							Entry<String, JsonNode> errorField = errorFields.next();
-							responseErrors += errorField.getKey() + ": " + errorField.getValue().asText() + "\n";
+							sb.append(errorField.getKey());
+							sb.append(": ");
+							sb.append(errorField.getValue().asText());
+							sb.append('\n');
 						}
+						responseErrors = sb.toString();
 					} else if (responseMessage.contains("Bundle deployment failure")) {
 						responseErrors = objectMapper.readTree(responseContent).get("deployments").findValue("message").asText();
 					}

@@ -139,7 +139,7 @@ public class DefineGraph {
 		return true;
 	}
 
-	public class CycleDetectedException extends Exception {
+	public static class CycleDetectedException extends Exception {
 
 		private static final long serialVersionUID = 1L;
 
