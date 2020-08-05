@@ -105,7 +105,7 @@ public class BundleDeployHelper {
 		
 		String stringPassword = (password == null || password.length == 0) ? null : String.valueOf(password);
 		String credentials = username + ":" + stringPassword;
-		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
+		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes("ISO-8859-1"));
 		httpPost.setHeader(AUTHORIZATION_HEADER, "Basic " + encoding);
 		
 		if (!bundle.exists()) {
@@ -125,7 +125,7 @@ public class BundleDeployHelper {
 		}
 		
 		if (responseStatus.getStatusCode() != 200) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "ISO-8859-1"));
 			try {
 				String responseContent = bufferedReader.lines().collect(Collectors.joining());
 				if (contentType == null) {

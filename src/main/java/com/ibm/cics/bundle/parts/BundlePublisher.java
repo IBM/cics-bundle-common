@@ -109,7 +109,7 @@ public class BundlePublisher {
 					log.debug("Couldn't determine bundle part type for file name: " + fileName);
 					return null;
 				}
-				String extension = fileName.substring(dot + 1).toLowerCase();
+				String extension = fileName.substring(dot + 1).toLowerCase(Locale.getDefault());
 				BundlePartType type = BundlePartType.getType(extension);
 				if (type != null) {
 					String name = fileName.substring(0, dot);
