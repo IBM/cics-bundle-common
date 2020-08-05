@@ -125,7 +125,7 @@ public class BundleDeployHelper {
 		}
 		
 		if (responseStatus.getStatusCode() != 200) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "ISO-8859-1"));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 			try {
 				String responseContent = bufferedReader.lines().collect(Collectors.joining());
 				if (contentType == null) {
