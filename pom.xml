@@ -50,7 +50,37 @@
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <serverId>ossrh</serverId>
+          <stagingProfileId>2f4e6a35b09f57</stagingProfileId>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.0.4</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -108,36 +138,6 @@
           <configuration>
             <failOnWarnings>true</failOnWarnings>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nexus-staging-maven-plugin</artifactId>
-          <version>1.6.8</version>
-          <extensions>true</extensions>
-          <configuration>
-            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-            <serverId>ossrh</serverId>
-            <stagingProfileId>2f4e6a35b09f57</stagingProfileId>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.0.4</version>
-          <configuration>
-            <effort>Max</effort>
-            <threshold>Low</threshold>
-            <xmlOutput>true</xmlOutput>
-            <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>spotbugs</goal>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

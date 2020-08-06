@@ -6,5 +6,5 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" == 'false' ]; the
   mvn -Dstyle.color=always -B -U -P sign --settings travis-settings.xml verify spotbugs:spotbugs spotbugs:check deploy;
 # Otherwise just build and test
 else
-  mvn -Dstyle.color=always -B -U --settings travis-settings.xml verify spotbugs:spotbugs spotbugs:check;
+  mvn -Dstyle.color=always -B -U --settings travis-settings.xml verify spotbugs:check;
 fi
