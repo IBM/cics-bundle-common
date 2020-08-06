@@ -100,34 +100,31 @@ public class BundlePublisher {
 	 * @return a Define statement to add to cics.xml if the file was a bundle part, or null if not
 	 */
 	private static Define getDefine(Path toImport) {
-		if (toImport != null) {
-			final Path filePath = toImport.getFileName();
-			if (filePath != null) {
-				String fileName = filePath.toString();
-				int dot = fileName.lastIndexOf(".");
-				if (dot <= 0) {
-					log.debug("Couldn't determine bundle part type for file name: " + fileName);
-					return null;
-				}
-				String extension = fileName.substring(dot + 1).toLowerCase(Locale.getDefault());
-				BundlePartType type = BundlePartType.getType(extension);
-				if (type != null) {
-					String name = fileName.substring(0, dot);
-					if (name.length() > 0) {
-						return new Define(name, type, toImport.toString());
-					} else {
-						log.debug("Couldn't determine bundle part name for file \"" + fileName + "\"");
-						return null;
-					}
-				} else {
-					log.debug("Couldn't determine bundle part type by extension for file \"" + fileName + "\"");
-					return null;
-				}
+		Objects.requireNonNull(toImport);
+		final Path filePath = toImport.getFileName();
+		if (filePath != null) {
+			String fileName = filePath.toString();
+			int dot = fileName.lastIndexOf(".");
+			if (dot <= 0) {
+				log.debug("Couldn't determine bundle part type for file name: " + fileName);
+				return null;
 			}
-			log.debug("Couldn't determine file name: (null) ");
-			return null;
+			String extension = fileName.substring(dot + 1).toLowerCase(Locale.getDefault());
+			BundlePartType type = BundlePartType.getType(extension);
+			if (type != null) {
+				String name = fileName.substring(0, dot);
+				if (name.length() > 0) {
+					return new Define(name, type, toImport.toString());
+				} else {
+					log.debug("Couldn't determine bundle part name for file \"" + fileName + "\"");
+					return null;
+				}
+			} else {
+				log.debug("Couldn't determine bundle part type by extension for file \"" + fileName + "\"");
+				return null;
+			}
 		}
-		log.debug("Couldn't determine file name from import path: (null) ");
+		log.debug("Couldn't determine file name: (null) ");
 		return null;
 	}
 
