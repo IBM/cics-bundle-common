@@ -3,7 +3,7 @@
   
   <groupId>com.ibm.cics</groupId>
   <artifactId>cics-bundle-common</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>CICS Bundle Common Parent</name>
@@ -50,7 +50,26 @@
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.0.4</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -273,5 +292,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
 </project>

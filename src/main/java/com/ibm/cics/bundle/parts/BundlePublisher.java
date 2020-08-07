@@ -14,6 +14,16 @@ package com.ibm.cics.bundle.parts;
  * #L%
  */
 
+import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,29 +33,8 @@ import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BundlePublisher {
@@ -111,28 +100,32 @@ public class BundlePublisher {
 	 * @return a Define statement to add to cics.xml if the file was a bundle part, or null if not
 	 */
 	private static Define getDefine(Path toImport) {
-		String fileName = toImport.getFileName().toString();
-		
-		int dot = fileName.lastIndexOf(".");
-		if (dot <= 0) {
-			log.debug("Couldn't determine bundle part type for file name: " + fileName);
-			return null;
-		}
-		
-		String extension = fileName.substring(dot + 1).toLowerCase();
-		BundlePartType type = BundlePartType.getType(extension);
-		if(type != null) {
-			String name = fileName.substring(0, dot);
-			if (name.length() > 0) {
-				return new Define(name, type, toImport.toString());
-			} else {
-				log.debug("Couldn't determine bundle part name for file \"" + fileName + "\"");
+		Objects.requireNonNull(toImport);
+		final Path filePath = toImport.getFileName();
+		if (filePath != null) {
+			String fileName = filePath.toString();
+			int dot = fileName.lastIndexOf(".");
+			if (dot <= 0) {
+				log.debug("Couldn't determine bundle part type for file name: " + fileName);
 				return null;
 			}
-		} else {
-			log.debug("Couldn't determine bundle part type by extension for file \"" + fileName + "\"");
-			return null;
+			String extension = fileName.substring(dot + 1).toLowerCase(Locale.getDefault());
+			BundlePartType type = BundlePartType.getType(extension);
+			if (type != null) {
+				String name = fileName.substring(0, dot);
+				if (name.length() > 0) {
+					return new Define(name, type, toImport.toString());
+				} else {
+					log.debug("Couldn't determine bundle part name for file \"" + fileName + "\"");
+					return null;
+				}
+			} else {
+				log.debug("Couldn't determine bundle part type by extension for file \"" + fileName + "\"");
+				return null;
+			}
 		}
+		log.debug("Couldn't determine file name: (null) ");
+		return null;
 	}
 
 	private Path getPathInBundle(BundleResource resource) throws PublishException {
@@ -180,7 +173,11 @@ public class BundlePublisher {
 		Path absolutePath = bundleRoot.resolve(pathInBundle);
 		
 		try {
-			Files.createDirectories(absolutePath.getParent());
+			final Path parent = absolutePath.getParent();
+			if (parent == null) {
+				throw new PublishException("Error getting parent for bundle resource \"" + pathInBundle + "\"");
+			}
+			Files.createDirectories(parent);
 		} catch (IOException e1) {
 			throw new PublishException("Error creating directories for bundle resource \"" + pathInBundle + "\"");
 		}

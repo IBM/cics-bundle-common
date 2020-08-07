@@ -105,7 +105,7 @@ public class BundleDeployHelper {
 		
 		String stringPassword = (password == null || password.length == 0) ? null : String.valueOf(password);
 		String credentials = username + ":" + stringPassword;
-		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes());
+		String encoding = Base64.getEncoder().encodeToString(credentials.getBytes("ISO-8859-1"));
 		httpPost.setHeader(AUTHORIZATION_HEADER, "Basic " + encoding);
 		
 		if (!bundle.exists()) {
@@ -125,7 +125,7 @@ public class BundleDeployHelper {
 		}
 		
 		if (responseStatus.getStatusCode() != 200) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 			try {
 				String responseContent = bufferedReader.lines().collect(Collectors.joining());
 				if (contentType == null) {
@@ -141,10 +141,15 @@ public class BundleDeployHelper {
 					
 					if (responseMessage.contains("Some of the supplied parameters were invalid")) {
 						Iterator<Entry<String, JsonNode>> errorFields = objectMapper.readTree(responseContent).get("requestErrors").fields();
+						StringBuffer sb = new StringBuffer();
 						while (errorFields.hasNext()) {
 							Entry<String, JsonNode> errorField = errorFields.next();
-							responseErrors += errorField.getKey() + ": " + errorField.getValue().asText() + "\n";
+							sb.append(errorField.getKey());
+							sb.append(": ");
+							sb.append(errorField.getValue().asText());
+							sb.append('\n');
 						}
+						responseErrors = sb.toString();
 					} else if (responseMessage.contains("Bundle deployment failure")) {
 						responseErrors = objectMapper.readTree(responseContent).get("deployments").findValue("message").asText();
 					}
