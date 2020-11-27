@@ -56,8 +56,12 @@ public class BundleDeployHelper {
 		mpeb.addPart("bundle", new FileBody(bundle, ContentType.create("application/zip")));
 		mpeb.addPart("bunddef", new StringBody(bunddef, ContentType.TEXT_PLAIN));
 		mpeb.addPart("csdgroup", new StringBody(csdgroup, ContentType.TEXT_PLAIN));
-		mpeb.addPart("cicsplex", new StringBody(cicsplex, ContentType.TEXT_PLAIN));
-		mpeb.addPart("region", new StringBody(region, ContentType.TEXT_PLAIN));
+		if (cicsplex != null && !cicsplex.isEmpty()) {
+			mpeb.addPart("cicsplex", new StringBody(cicsplex, ContentType.TEXT_PLAIN));
+		}
+		if (region != null && !region.isEmpty()) {
+			mpeb.addPart("region", new StringBody(region, ContentType.TEXT_PLAIN));
+		}
 		
 		
 		String path = endpointURL.getPath();
