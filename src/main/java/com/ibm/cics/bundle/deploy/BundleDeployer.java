@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/*
+ * This class is used as an entry point to drive the BundleDeployHelper, primarily for manual testing/development purposes.
+ */
 public class BundleDeployer {
 	
 	public static void main(String[] args) {
