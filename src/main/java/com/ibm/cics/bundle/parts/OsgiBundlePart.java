@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -28,14 +29,15 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;
 
-	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle) {
+	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle, String versionRange) {
 		super(
 			name,
 			BundlePartType.OSGIBUNDLE,
 			symbolicName,
 			jvmServer,
 			osgiBundle,
-			"jar"
+			"jar",
+			versionRange
 		);
 
 		this.osgiVersion = osgiVersion;

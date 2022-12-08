@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.transform.TransformerException;
 
@@ -34,6 +35,7 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 	private final File bin;
 	private final String binExtension;
 	private final String symbolicName;
+	private String versionRange;
 	
 	public AbstractJavaBundlePart(
 			String name,
@@ -49,17 +51,32 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 		this.bin = bin;
 		this.binExtension = binExtension;
 	}
-	
+
+	public AbstractJavaBundlePart(
+			String name,
+			BundlePartType type,
+			String symbolicName,
+			String jvmServer,
+			File bin,
+			String binExtension,
+			String versionRange) {
+		this(name, type, symbolicName, jvmServer, bin, binExtension);
+		this.versionRange = versionRange;
+	}
+
 	@Override
 	public InputStream getContent() throws IOException {
 		Document bundlePart = BundlePublisher.createDocument();
 		
 		Element root = bundlePart.createElement(getType().getBundlePartExtension());
 		bundlePart.appendChild(root);
-		
+
 		root.setAttribute("symbolicname", symbolicName);
 		root.setAttribute("jvmserver", jvmServer);
-		
+		if (!versionRange.equals("") && !versionRange.isEmpty()) {
+			root.setAttribute("versionrange", versionRange);
+		}
+
 		addAdditionalNodes(root);
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -79,6 +79,10 @@ public abstract class AbstractJavaBundlePartTestCase {
 	protected void setExpectedJVMServer(String jvmServer) {
 		bundlePartAttributes.put("jvmserver", jvmServer);
 	}
+
+	protected void setExpectedVersionrange(String versionrange) {
+		bundlePartAttributes.put("versionrange", versionrange);
+	}
 	
 	protected void assertBundlePart() throws Exception {
 		try (InputStream content = bundlePart.getContent()) {
