@@ -28,24 +28,36 @@ import org.w3c.dom.Element;
 public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;
+	private String versionRange;
 
-	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle, String versionRange) {
+	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle) {
 		super(
 			name,
 			BundlePartType.OSGIBUNDLE,
 			symbolicName,
 			jvmServer,
 			osgiBundle,
-			"jar",
-			versionRange
+			"jar"
 		);
 
 		this.osgiVersion = osgiVersion;
 	}
+
+	public void setVersionRange(String versionRange) {
+		this.versionRange = versionRange;
+	}
+
+	public String getVersionRange() {
+		return versionRange;
+	}
 	
 	@Override
 	protected void addAdditionalNodes(Element rootElement) {
-		rootElement.setAttribute("version", osgiVersion);
+		if (versionRange != null && !versionRange.equals("") && !versionRange.isEmpty()) {
+			rootElement.setAttribute("versionrange", versionRange);
+		} else {
+			rootElement.setAttribute("version", osgiVersion);
+		}
 	}
 	
 	/**
