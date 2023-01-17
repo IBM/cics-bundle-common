@@ -4,7 +4,7 @@ package com.ibm.cics.bundle.parts;
  * #%L
  * CICS Bundle Common Parent
  * %%
- * Copyright (C) 2019 IBM Corp.
+ * Copyright (C) 2019, 2023 IBM Corp.
  * %%
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
