@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
