@@ -42,6 +42,7 @@ public class OSGiBundlePartVersionRangeTest extends AbstractJavaBundlePartTestCa
     protected void applyDefaults() {
         setExpectedSymbolicName("foo");
         setExpectedJVMServer("bar");
+        setExpectedAttribute("version", "");
         setExpectedVersionRange("[1.0,2.0)");
     }
 

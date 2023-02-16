@@ -81,7 +81,7 @@ public abstract class AbstractJavaBundlePartTestCase {
 	}
 
 	protected void setExpectedVersionRange(String versionrange) {
-		bundlePartAttributes.put("versionrange", versionrange);
+		bundlePartAttributes.put("versionRange", versionrange);
 	}
 	
 	protected void assertBundlePart() throws Exception {
