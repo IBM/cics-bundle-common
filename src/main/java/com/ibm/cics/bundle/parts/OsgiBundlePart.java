@@ -53,7 +53,8 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	@Override
 	protected void addAdditionalNodes(Element rootElement) {
 		if (versionRange != null && !versionRange.equals("") && !versionRange.isEmpty()) {
-			rootElement.setAttribute("versionrange", versionRange);
+			rootElement.setAttribute("versionRange", versionRange);
+			rootElement.setAttribute("version", "");
 		} else {
 			rootElement.setAttribute("version", osgiVersion);
 		}
