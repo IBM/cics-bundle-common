@@ -4,7 +4,7 @@ package com.ibm.cics.bundle.parts;
  * #%L
  * CICS Bundle Common Parent
  * %%
- * Copyright (C) 2019 IBM Corp.
+ * Copyright (C) 2019, 2023 IBM Corp.
  * %%
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;
+	private String versionRange;
 
 	public OsgiBundlePart(String name, String symbolicName, String osgiVersion, String jvmServer, File osgiBundle) {
 		super(
@@ -40,10 +41,23 @@ public class OsgiBundlePart extends AbstractJavaBundlePart  {
 
 		this.osgiVersion = osgiVersion;
 	}
+
+	public void setVersionRange(String versionRange) {
+		this.versionRange = versionRange;
+	}
+
+	public String getVersionRange() {
+		return versionRange;
+	}
 	
 	@Override
 	protected void addAdditionalNodes(Element rootElement) {
-		rootElement.setAttribute("version", osgiVersion);
+		if (versionRange != null && !versionRange.equals("") && !versionRange.isEmpty()) {
+			rootElement.setAttribute("versionRange", versionRange);
+			rootElement.setAttribute("version", "");
+		} else {
+			rootElement.setAttribute("version", osgiVersion);
+		}
 	}
 	
 	/**
