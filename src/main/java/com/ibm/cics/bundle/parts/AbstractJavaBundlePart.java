@@ -4,7 +4,7 @@ package com.ibm.cics.bundle.parts;
  * #%L
  * CICS Bundle Common Parent
  * %%
- * Copyright (C) 2019 IBM Corp.
+ * Copyright (C) 2019, 2023 IBM Corp.
  * %%
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,7 +34,7 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 	private final File bin;
 	private final String binExtension;
 	private final String symbolicName;
-	
+
 	public AbstractJavaBundlePart(
 			String name,
 			BundlePartType type,
@@ -49,17 +49,17 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 		this.bin = bin;
 		this.binExtension = binExtension;
 	}
-	
+
 	@Override
 	public InputStream getContent() throws IOException {
 		Document bundlePart = BundlePublisher.createDocument();
 		
 		Element root = bundlePart.createElement(getType().getBundlePartExtension());
 		bundlePart.appendChild(root);
-		
+
 		root.setAttribute("symbolicname", symbolicName);
 		root.setAttribute("jvmserver", jvmServer);
-		
+
 		addAdditionalNodes(root);
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
