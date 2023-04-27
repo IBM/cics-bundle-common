@@ -63,13 +63,13 @@ public class BundlePublisher {
 	private final int major;
 	private final int minor;
 	private final int micro;
-	private final int release;
+	private final long release;
 	
 	private Consumer<Path> listener = f -> {};
 	private Map<Path, BundleResource> bundleResources = new HashMap<>();
 	private List<Define> defines = new ArrayList<>();
 
-	public BundlePublisher(Path bundleRoot, String bundleId, int major, int minor, int micro, int release) {
+	public BundlePublisher(Path bundleRoot, String bundleId, int major, int minor, int micro, long release) {
 		this.bundleRoot = bundleRoot;
 		this.bundleId = bundleId;
 		this.major = major;
@@ -200,7 +200,7 @@ public class BundlePublisher {
 		}
 	}
 	
-	private void writeManifest(List<Define> defines, String id, int major, int minor, int micro, int release) throws PublishException {
+	private void writeManifest(List<Define> defines, String id, int major, int minor, int micro, long release) throws PublishException {
 		Document d = DOCUMENT_BUILDER.newDocument();
 		Element root = d.createElementNS(BundlePartType.NS, "manifest");
 		root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", BundlePartType.NS);
