@@ -53,7 +53,7 @@ public class BundlePublisherTest {
 
 	@Test
 	public void publish() throws Exception {
-		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3, 4);
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
 		bundlePublisher.addResource(new EarBundlePart("bar", "banana", ear));
 		
 		bundlePublisher.publishResources();
@@ -78,7 +78,7 @@ public class BundlePublisherTest {
 			cicsXml,
 			isIdenticalTo(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<manifest xmlns=\"http://www.ibm.com/xmlns/prod/cics/bundle\" bundleMajorVer=\"1\" bundleMicroVer=\"3\" bundleMinorVer=\"2\" bundleRelease=\"4\" bundleVersion=\"1\" id=\"foo\">\n" + 
+				"<manifest xmlns=\"http://www.ibm.com/xmlns/prod/cics/bundle\" bundleMajorVer=\"1\" bundleMicroVer=\"3\" bundleMinorVer=\"2\" bundleRelease=\"0\" bundleVersion=\"1\" id=\"foo\">\n" +
 				"  <meta_directives>\n" + 
 				"    <timestamp>2019-08-28T08:26:05.076Z</timestamp>\n" + 
 				"  </meta_directives>\n" + 
