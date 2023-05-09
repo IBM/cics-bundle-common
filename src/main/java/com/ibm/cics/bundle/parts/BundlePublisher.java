@@ -63,19 +63,16 @@ public class BundlePublisher {
 	private final int major;
 	private final int minor;
 	private final int micro;
-	private final int release;
-	
 	private Consumer<Path> listener = f -> {};
 	private Map<Path, BundleResource> bundleResources = new HashMap<>();
 	private List<Define> defines = new ArrayList<>();
 
-	public BundlePublisher(Path bundleRoot, String bundleId, int major, int minor, int micro, int release) {
+	public BundlePublisher(Path bundleRoot, String bundleId, int major, int minor, int micro) {
 		this.bundleRoot = bundleRoot;
 		this.bundleId = bundleId;
 		this.major = major;
 		this.minor = minor;
 		this.micro = micro;
-		this.release = release;
 	}
 	
 	public void addStaticResource(Path path, BundleResourceContentSupplier content) throws PublishException {
@@ -157,8 +154,7 @@ public class BundlePublisher {
 			bundleId,
 			major,
 			minor,
-			micro,
-			release
+			micro
 		);
 		
 		for (Map.Entry<Path, BundleResource> bundleResourceE : bundleResources.entrySet()) {
@@ -200,7 +196,7 @@ public class BundlePublisher {
 		}
 	}
 	
-	private void writeManifest(List<Define> defines, String id, int major, int minor, int micro, int release) throws PublishException {
+	private void writeManifest(List<Define> defines, String id, int major, int minor, int micro) throws PublishException {
 		Document d = DOCUMENT_BUILDER.newDocument();
 		Element root = d.createElementNS(BundlePartType.NS, "manifest");
 		root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", BundlePartType.NS);
@@ -209,7 +205,7 @@ public class BundlePublisher {
 		root.setAttribute("bundleMajorVer", String.valueOf(major));
 		root.setAttribute("bundleMinorVer", String.valueOf(minor));
 		root.setAttribute("bundleMicroVer", String.valueOf(micro));
-		root.setAttribute("bundleRelease", String.valueOf(release));
+		root.setAttribute("bundleRelease", "0");
 		root.setAttribute("bundleVersion", "1");
 		
 		d.appendChild(root);
