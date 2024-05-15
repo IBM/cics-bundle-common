@@ -127,7 +127,7 @@ public class BundleDeployHelper {
 		} else {
 			contentType = contentTypeHeaders[0].getValue();
 		}
-		
+
 		if (responseStatus.getStatusCode() != 200) {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 			try {
