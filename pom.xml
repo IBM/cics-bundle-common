@@ -7,7 +7,14 @@
   <packaging>jar</packaging>
 
   <name>CICS Bundle Common Parent</name>
-
+  <description>Supporting code for the Maven and Gradle plugins to build and deploy CICS Bundles</description>
+  <licenses>
+    <license>
+      <name>EPL-2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0/</url>
+    </license>
+  </licenses>
+  
   <organization>
     <name>IBM Corp.</name>
   </organization>
