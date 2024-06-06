@@ -144,7 +144,7 @@ public class BundleDeployHelperTest {
 		File bundleArchive = new File(bundleFilePath);
 		
 		expectedException.expect(BundleDeployException.class);
-		expectedException.expectMessage("Http response: HTTP/1.1 401 Unauthorized");
+		expectedException.expectMessage("Http response: 401");
 
 		BundleDeployHelper.deployBundle(new URI(wireMockRule.baseUrl()), bundleArchive, "bundle", "csdgroup", "cicsplex", "region", "username", "password".toCharArray(), true);
 	}
