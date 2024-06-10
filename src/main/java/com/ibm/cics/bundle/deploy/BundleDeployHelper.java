@@ -28,21 +28,23 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.entity.mime.StringBody;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,16 +94,23 @@ public class BundleDeployHelper {
 		HttpEntity httpEntity = mpeb.build();
 		httpPost.setEntity(httpEntity);
 		
-		HttpClient httpClient;
+		CloseableHttpClient httpClient;
 		if (!allowSelfSignedCertificate) {
 			httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		} else {
 			try {
-				httpClient = HttpClients.custom()
-						.useSystemProperties()
-						.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-						.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-						.build();
+                SSLContextBuilder sslContextBuilder = SSLContexts.custom().loadTrustMaterial(new TrustAllStrategy());
+                SSLConnectionSocketFactoryBuilder sslSocketFactoryBuilder = SSLConnectionSocketFactoryBuilder.create()
+                        .setSslContext(sslContextBuilder.build())
+                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+                
+                PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder.create()
+                        .setSSLSocketFactory(sslSocketFactoryBuilder.build());
+
+                httpClient = HttpClients.custom()
+                        .setConnectionManager(connectionManagerBuilder.build())
+                        .useSystemProperties()
+                        .build();
 			} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 				throw new BundleDeployException("Error instantiating secure connection", e);
 			}
@@ -118,8 +127,8 @@ public class BundleDeployHelper {
 		
 		
 		
-		HttpResponse response = httpClient.execute(httpPost);
-		StatusLine responseStatus = response.getStatusLine();
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+		int responseStatusCode = response.getCode();
 		Header[] contentTypeHeaders = response.getHeaders("Content-Type");
 		String contentType;
 		if (contentTypeHeaders.length != 1) {
@@ -127,13 +136,13 @@ public class BundleDeployHelper {
 		} else {
 			contentType = contentTypeHeaders[0].getValue();
 		}
-		
-		if (responseStatus.getStatusCode() != 200) {
+
+		if (responseStatusCode != 200) {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 			try {
 				String responseContent = bufferedReader.lines().collect(Collectors.joining());
 				if (contentType == null) {
-					throw new BundleDeployException("Http response: " + responseStatus);
+					throw new BundleDeployException("Http response: " + responseStatusCode);
 				} else if (contentType.equals("application/xml")) {
 					//liberty level error
 					throw new BundleDeployException(responseContent);
