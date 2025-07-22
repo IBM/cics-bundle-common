@@ -7,6 +7,8 @@
   <packaging>jar</packaging>
 
   <name>CICS Bundle Common Parent</name>
+  <url>https://github.com/IBM/cics-bundle-common</url>
+
   <description>Supporting code for the Maven and Gradle plugins to build and deploy CICS Bundles</description>
   <licenses>
     <license>
@@ -19,6 +21,21 @@
     <name>IBM Corp.</name>
   </organization>
   <inceptionYear>2019</inceptionYear>
+
+  <scm>
+    <connection>scm:git:git://github.com/IBM/cics-bundle-common.git</connection>
+    <developerConnection>scm:git:ssh://github.com:IBM/cics-bundle-common.git</developerConnection>
+    <url>http://github.com/IBM/cics-bundle-common/tree/main</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>IBM</name>
+      <email>noreply@ibm.com</email>
+      <organization>IBM</organization>
+      <organizationUrl>https://www.ibm.com</organizationUrl>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
