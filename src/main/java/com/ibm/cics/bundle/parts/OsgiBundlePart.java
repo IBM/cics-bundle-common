@@ -4,7 +4,7 @@ package com.ibm.cics.bundle.parts;
  * #%L
  * CICS Bundle Common Parent
  * %%
- * Copyright (C) 2019, 2023 IBM Corp.
+ * Copyright (C) 2019, 2026 IBM Corp.
  * %%
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,12 @@ import java.util.jar.Manifest;
 
 import org.w3c.dom.Element;
 
+/**
+ * Definition of an OSGi bundle CICS bundle part.
+ * <p>
+ * This is defined by the <code>osgibundle</code> XML element, with the
+ * <code>http://www.ibm.com/xmlns/prod/cics/bundle/OSGIBUNDLE</code> schema.
+ */
 public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;
