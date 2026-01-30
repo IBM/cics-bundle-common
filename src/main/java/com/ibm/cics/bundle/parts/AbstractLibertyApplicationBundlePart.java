@@ -38,7 +38,7 @@ public abstract class AbstractLibertyApplicationBundlePart extends AbstractJavaB
     private final File libertyAppConfigFile;
 
     /**
-     * @param name
+     * @param name                        The name of the bundle part.
      * @param type                        The type of the bundle part.
      * @param symbolicName                The symbolic name of the bundle part.
      * @param jvmServer                   The JVM server the bundle part is deployed

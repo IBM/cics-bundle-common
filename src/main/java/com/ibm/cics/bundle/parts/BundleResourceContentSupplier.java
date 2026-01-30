@@ -25,7 +25,7 @@ public interface BundleResourceContentSupplier {
 
 	/**
 	 * @return The contents of the resource in a stream.
-	 * @throws IOException
+	 * @throws IOException If the content cannot be read.
 	 */
 	public InputStream getContent() throws IOException;
 	
