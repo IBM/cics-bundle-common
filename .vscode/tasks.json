@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Maven: clean install",
+      "type": "shell",
+      "command": "JAVA_HOME=${input:javaHome} mvn clean install",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$mvn-compile"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "javaHome",
+      "type": "promptString",
+      "description": "JAVA_HOME path (Java 11 or higher)",
+      "default": "${env:JAVA_HOME}"
+    }
+  ]
+}
