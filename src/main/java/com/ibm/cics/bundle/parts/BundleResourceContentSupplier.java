@@ -17,9 +17,16 @@ package com.ibm.cics.bundle.parts;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Supplies the content of a CICS bundle resource.
+ */
 @FunctionalInterface
 public interface BundleResourceContentSupplier {
 
+	/**
+	 * @return The contents of the resource in a stream.
+	 * @throws IOException If the content cannot be read.
+	 */
 	public InputStream getContent() throws IOException;
 	
 }
