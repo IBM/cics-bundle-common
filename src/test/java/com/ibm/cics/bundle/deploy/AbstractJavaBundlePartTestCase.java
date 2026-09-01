@@ -1,22 +1,22 @@
 package com.ibm.cics.bundle.deploy;
 
 /*-
- * #%L
- * CICS Bundle Common Parent
- * %%
- * Copyright (C) 2019, 2023 IBM Corp.
- * %%
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
- * SPDX-License-Identifier: EPL-2.0
- * #L%
- */
+* #%L
+* CICS Bundle Common Parent
+* %%
+* Copyright (C) 2019, 2023 IBM Corp.
+* %%
+* This program and the accompanying materials are made
+* available under the terms of the Eclipse Public License 2.0
+* which is available at https://www.eclipse.org/legal/epl-2.0/
+* 
+* SPDX-License-Identifier: EPL-2.0
+* #L%
+*/
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -126,3 +126,4 @@ public abstract class AbstractJavaBundlePartTestCase {
 	}
 
 }
+ 

@@ -16,17 +16,22 @@ package com.ibm.cics.bundle.parts;
 
 import java.io.File;
 
-public class EbaBundlePart extends AbstractJavaBundlePart  {
-	
-	public EbaBundlePart(String symbolicName, String jvmServer, File warFile) {
+/**
+ * Definition of an enterprise bundle CICS bundle part.
+ * <p>
+ * This is defined by the <code>ebabundle</code> XML element, with the
+ * <code>http://www.ibm.com/xmlns/prod/cics/bundle/EBABUNDLE</code> schema.
+ */
+public class EbaBundlePart extends AbstractJavaBundlePart {
+
+	public EbaBundlePart(String symbolicName, String jvmServer, File ebaFile) {
 		super(
-			symbolicName,
-			BundlePartType.EBABUNDLE,
-			symbolicName,
-			jvmServer,
-			warFile,
-			"eba"
-		);
+				symbolicName,
+				BundlePartType.EBABUNDLE,
+				symbolicName,
+				jvmServer,
+				ebaFile,
+				"eba");
 	}
 
 }
