@@ -24,6 +24,13 @@ import java.util.jar.Manifest;
 
 import org.w3c.dom.Element;
 
+
+/**
+ * Definition of an OSGi bundle CICS bundle part.
+ * <p>
+ * This is defined by the <code>osgibundle</code> XML element, with the
+ * <code>http://www.ibm.com/xmlns/prod/cics/bundle/OSGIBUNDLE</code> schema.
+ */
 public class OsgiBundlePart extends AbstractJavaBundlePart  {
 	
 	private String osgiVersion;

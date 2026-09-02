@@ -13,9 +13,8 @@ package com.ibm.cics.bundle.deploy;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
-
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
 
 import java.io.File;
@@ -35,6 +34,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.ibm.cics.bundle.parts.BundlePublisher;
 import com.ibm.cics.bundle.parts.EarBundlePart;
+import com.ibm.cics.bundle.parts.WarBundlePart;
 
 public class BundlePublisherTest {
 	
@@ -70,7 +70,7 @@ public class BundlePublisherTest {
 			.map(Path::toString)
 			.collect(Collectors.toList());
 		
-		assertThat(paths, contains("", "META-INF", "META-INF/cics.xml", "bar.ear", "bar.earbundle"));
+		assertThat(paths, containsInAnyOrder("", "META-INF", "META-INF" + File.separator + "cics.xml", "bar.ear", "bar.earbundle"));
 		
 		String cicsXml = readBundleFile(root, "META-INF/cics.xml");
 		
@@ -100,6 +100,147 @@ public class BundlePublisherTest {
 			isIdenticalTo(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<earbundle jvmserver=\"banana\" symbolicname=\"bar\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishEarWithAppConfigFile() throws Exception {
+		File appConfigFile = tf.newFile("ear-app-config.xml");
+		FileUtils.write(appConfigFile, "<server></server>", StandardCharsets.UTF_8);
+		
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new EarBundlePart("bar", "banana", true, appConfigFile, ear));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		List<String> paths = Files
+			.walk(bundleRoot)
+			.sorted()
+			.map(bundleRoot::relativize)
+			.map(Path::toString)
+			.collect(Collectors.toList());
+		
+		assertThat(paths, containsInAnyOrder("", "META-INF", "META-INF" + File.separator + "cics.xml",
+				"bar.ear", "bar.earbundle", "ear-app-config.xml"));
+		
+		assertThat(
+			readBundleFile(bundleRoot, "bar.earbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<earbundle appConfigFile=\"ear-app-config.xml\" jvmserver=\"banana\" symbolicname=\"bar\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishEarWithAddCICSAllAuthFalse() throws Exception {
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new EarBundlePart("bar", "banana", false, null, ear));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		assertThat(
+			readBundleFile(bundleRoot, "bar.earbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<earbundle addCICSAllAuth=\"false\" jvmserver=\"banana\" symbolicname=\"bar\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishEarWithBothAppConfigFileAndAddCICSAllAuthFalse() throws Exception {
+		File appConfigFile = tf.newFile("ear-app-config.xml");
+		FileUtils.write(appConfigFile, "<server></server>", StandardCharsets.UTF_8);
+		
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new EarBundlePart("bar", "banana", false, appConfigFile, ear));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		assertThat(
+			readBundleFile(bundleRoot, "bar.earbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<earbundle addCICSAllAuth=\"false\" appConfigFile=\"ear-app-config.xml\" jvmserver=\"banana\" symbolicname=\"bar\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishWarWithAppConfigFile() throws Exception {
+		File war = tf.newFile("my.war");
+		FileUtils.write(war, "war contents", StandardCharsets.UTF_8);
+		File appConfigFile = tf.newFile("war-app-config.xml");
+		FileUtils.write(appConfigFile, "<server></server>", StandardCharsets.UTF_8);
+		
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new WarBundlePart("webapp", "banana", true, appConfigFile, war));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		List<String> paths = Files
+			.walk(bundleRoot)
+			.sorted()
+			.map(bundleRoot::relativize)
+			.map(Path::toString)
+			.collect(Collectors.toList());
+		
+		assertThat(paths, containsInAnyOrder("", "META-INF", "META-INF" + File.separator + "cics.xml",
+				"webapp.war", "webapp.warbundle", "war-app-config.xml"));
+		
+		assertThat(
+			readBundleFile(bundleRoot, "webapp.warbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<warbundle appConfigFile=\"war-app-config.xml\" jvmserver=\"banana\" symbolicname=\"webapp\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishWarWithAddCICSAllAuthFalse() throws Exception {
+		File war = tf.newFile("my.war");
+		FileUtils.write(war, "war contents", StandardCharsets.UTF_8);
+		
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new WarBundlePart("webapp", "banana", false, null, war));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		assertThat(
+			readBundleFile(bundleRoot, "webapp.warbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<warbundle addCICSAllAuth=\"false\" jvmserver=\"banana\" symbolicname=\"webapp\"/>"
+			)
+		);
+	}
+
+	@Test
+	public void publishWarWithBothAppConfigFileAndAddCICSAllAuthFalse() throws Exception {
+		File war = tf.newFile("my.war");
+		FileUtils.write(war, "war contents", StandardCharsets.UTF_8);
+		File appConfigFile = tf.newFile("war-app-config.xml");
+		FileUtils.write(appConfigFile, "<server></server>", StandardCharsets.UTF_8);
+		
+		BundlePublisher bundlePublisher = new BundlePublisher(bundleRoot, "foo", 1, 2, 3);
+		bundlePublisher.addResource(new WarBundlePart("webapp", "banana", false, appConfigFile, war));
+		
+		bundlePublisher.publishResources();
+		bundlePublisher.publishDynamicResources();
+		
+		assertThat(
+			readBundleFile(bundleRoot, "webapp.warbundle"),
+			isIdenticalTo(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<warbundle addCICSAllAuth=\"false\" appConfigFile=\"war-app-config.xml\" jvmserver=\"banana\" symbolicname=\"webapp\"/>"
 			)
 		);
 	}

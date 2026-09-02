@@ -17,10 +17,19 @@ package com.ibm.cics.bundle.parts;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Defines a resource within a CICS bundle.
+ */
 public interface BundleResource extends BundleResourceContentSupplier {
-	
+	/**
+	 * @return The path to the CICS bundle part descriptor.
+	 */
 	public Path getPath();
-	
+
+	/**
+	 * @return A list of the resource in this CICS bundle part that are pointed to
+	 *         by the bundle part descriptor.
+	 */
 	public List<BundleResource> getDynamicResources();
-	
+
 }

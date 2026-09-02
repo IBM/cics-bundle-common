@@ -28,11 +28,25 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-public abstract class AbstractJavaBundlePart extends BundlePartResource {
 
+/**
+ * Defines a CICS bundle part that deploys a Java application.
+ */
+public abstract class AbstractJavaBundlePart extends BundlePartResource {
+	/** The JVM server this CICS bundle part should be deployed to */
 	private final String jvmServer;
+
+	/** The file containing the Java application binary */
 	private final File bin;
+
+	/** The extension of the Java application file (e.g. 'jar') */
 	private final String binExtension;
+
+	/**
+	 * The symbolic name of the Java application. For OSGi bundles this would be the
+	 * Bundle-SymbolicName, otherwise it is the file name of the Java application
+	 * without the extension.
+	 */
 	private final String symbolicName;
 
 	public AbstractJavaBundlePart(
@@ -43,7 +57,8 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 			File bin,
 			String binExtension) {
 		super(name, type);
-		if (jvmServer == null || "".equals(jvmServer)) throw new IllegalStateException("JVM server was not supplied");
+		if (jvmServer == null || "".equals(jvmServer))
+			throw new IllegalStateException("JVM server was not supplied");
 		this.jvmServer = jvmServer;
 		this.symbolicName = symbolicName;
 		this.bin = bin;
@@ -53,7 +68,7 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 	@Override
 	public InputStream getContent() throws IOException {
 		Document bundlePart = BundlePublisher.createDocument();
-		
+
 		Element root = bundlePart.createElement(getType().getBundlePartExtension());
 		bundlePart.appendChild(root);
 
@@ -61,9 +76,9 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 		root.setAttribute("jvmserver", jvmServer);
 
 		addAdditionalNodes(root);
-		
+
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
+
 		try {
 			BundlePublisher.writeDocument(bundlePart, outputStream);
 			return new ByteArrayInputStream(outputStream.toByteArray());
@@ -71,14 +86,21 @@ public abstract class AbstractJavaBundlePart extends BundlePartResource {
 			throw new IOException(e);
 		}
 	}
-	
+
 	@Override
 	public List<BundleResource> getDynamicResources() {
-		return Collections.singletonList(new StaticBundleResource(Paths.get(getName() + "." + binExtension), () -> new FileInputStream(bin)));
+		return Collections.singletonList(
+				new StaticBundleResource(Paths.get(getName() + "." + binExtension), () -> new FileInputStream(bin)));
 	}
-	
+
+	/**
+	 * Add any additional nodes (e.g. attributes, child elements) to the CICS bundle
+	 * part descriptor.
+	 * 
+	 * @param rootElement The root element of the CICS bundle part descriptor.
+	 */
 	protected void addAdditionalNodes(Element rootElement) {
-		//no-op
+		// no-op
 	}
-	
+
 }
